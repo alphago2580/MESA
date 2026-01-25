@@ -1,0 +1,6 @@
+{
+  "discord_token": "YOUR_DISCORD_BOT_TOKEN",
+  "discord_channel_id": "YOUR_CHANNEL_ID",
+  "github_token": "YOUR_GITHUB_TOKEN",
+  "github_repo": "alphago2580/MESA"
+}
