@@ -1,4 +1,4 @@
-# MESA - 암호화폐 트레이딩 봇
+# MESA - 암호화폐 트레이딩 봇 (견본코드라 다바꿔야합니다)
 
 [English Documentation](README.md)
 

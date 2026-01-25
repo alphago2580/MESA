@@ -1,4 +1,4 @@
-# MESA - Crypto Trading Bot
+# MESA - Crypto Trading Bot(견본코드라 다바꿔야합니다)
 
 [한국어 문서](README_ko.md)
 
