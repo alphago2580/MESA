@@ -1,0 +1,5 @@
+{
+  "name": "MacroSphere Simulator",
+  "description": "A high-end macroeconomic simulation platform that uses multi-agent neural networks to predict societal and economic outcomes based on structural variable shifts.",
+  "requestFramePermissions": []
+}
