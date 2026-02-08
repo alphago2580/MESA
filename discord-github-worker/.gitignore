@@ -1,4 +1,18 @@
-config.json
+# Dependencies
+node_modules/
+
+# Wrangler
+.wrangler/
+.dev.vars
+
+# Environment
 .env
+config.json
+
+# Python (legacy)
 __pycache__/
 *.pyc
+
+# OS
+.DS_Store
+Thumbs.db
