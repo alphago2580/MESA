@@ -1,0 +1,27 @@
+name = "discord-github-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+# KV 네임스페이스 바인딩 (wrangler kv namespace create MAPPING 후 ID 입력)
+[[kv_namespaces]]
+binding = "MAPPING"
+id = "e6b091817bf34a4b95a000f40ac345dc"
+
+[vars]
+GITHUB_APP_ID = "2724882"
+DISCORD_FORUM_CHANNEL_ID = "1464865388885049434"
+DISCORD_PR_CHANNEL_ID = "1464865388885049434"
+# Secrets (wrangler secret put 명령으로 설정)
+# DISCORD_PUBLIC_KEY
+# DISCORD_BOT_TOKEN
+# GITHUB_PRIVATE_KEY
+# GITHUB_WEBHOOK_SECRET
+# NOTION_API_TOKEN
+# NOTION_DATA_SOURCE_ID
