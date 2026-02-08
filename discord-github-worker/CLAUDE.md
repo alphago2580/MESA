@@ -44,9 +44,19 @@ wrangler kv namespace create MAPPING
 ### Environment Variables
 `wrangler.toml`의 `[vars]` 섹션에서 설정:
 - `GITHUB_APP_ID`: GitHub App ID
+- `GITHUB_OWNER`: GitHub 레포지토리 소유자
+- `GITHUB_REPO`: GitHub 레포지토리 이름
 - `DISCORD_FORUM_CHANNEL_ID`: 이슈 동기화용 Discord 포럼 채널 ID
 - `DISCORD_PR_CHANNEL_ID`: PR 알림용 Discord 채널 ID
 - `NOTION_DATABASE_ID`: Notion 데이터베이스 ID (선택사항)
+
+Secrets (`wrangler secret put`으로 설정):
+- `DISCORD_PUBLIC_KEY`: Discord 앱 공개 키
+- `DISCORD_BOT_TOKEN`: Discord 봇 토큰
+- `GITHUB_PRIVATE_KEY`: GitHub App 비공개 키
+- `GITHUB_WEBHOOK_SECRET`: GitHub Webhook 시크릿
+- `NOTION_API_TOKEN`: Notion Integration 토큰 (선택사항)
+- `NOTION_DATA_SOURCE_ID`: Notion 데이터베이스 ID (선택사항)
 
 ## Architecture
 
