@@ -1,5 +1,6 @@
 // GitHub Webhook 핸들러
 
+import type { Env } from './index';
 import { verifyGitHubSignature } from './utils/github-api';
 import {
   createForumPost,
@@ -8,18 +9,6 @@ import {
 } from './utils/discord-api';
 import { getDiscordPostId, createMapping, getNotionPageId, createNotionMapping } from './utils/mapping';
 import { createNotionPage, updateNotionPageStatus } from './utils/notion-api';
-
-interface Env {
-  MAPPING: KVNamespace;
-  DISCORD_BOT_TOKEN: string;
-  GITHUB_WEBHOOK_SECRET: string;
-  DISCORD_FORUM_CHANNEL_ID?: string;  // 이슈용 포럼 채널
-  DISCORD_PR_CHANNEL_ID?: string;      // PR 알림 채널
-  NOTION_API_KEY?: string;             // Notion Integration 토큰 (레거시)
-  NOTION_API_TOKEN?: string;           // Notion Integration 토큰
-  NOTION_DATABASE_ID?: string;         // Notion 데이터베이스 ID (vars)
-  NOTION_DATA_SOURCE_ID?: string;      // Notion 데이터베이스 ID (secret)
-}
 
 interface GitHubUser {
   login: string;

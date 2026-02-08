@@ -1,18 +1,9 @@
 // Discord 이벤트 핸들러
 
+import type { Env } from './index';
 import { verifyDiscordSignature } from './utils/discord-api';
 import { addIssueComment, createIssue } from './utils/github-api';
 import { getIssueFromPost } from './utils/mapping';
-
-interface Env {
-  MAPPING: KVNamespace;
-  DISCORD_PUBLIC_KEY: string;
-  DISCORD_BOT_TOKEN: string;
-  GITHUB_APP_ID: string;
-  GITHUB_PRIVATE_KEY: string;
-  GITHUB_OWNER?: string;
-  GITHUB_REPO?: string;
-}
 
 interface DiscordInteraction {
   type: number;
@@ -348,8 +339,8 @@ async function handleModalSubmit(
   const user = interaction.member?.user || interaction.user;
   const username = user?.global_name || user?.username || 'Unknown';
 
-  const owner = (env as any).GITHUB_OWNER || 'alphago2580';
-  const repo = (env as any).GITHUB_REPO || 'MESA';
+  const owner = env.GITHUB_OWNER;
+  const repo = env.GITHUB_REPO;
 
   const token = interaction.token;
   const appId = interaction.application_id;

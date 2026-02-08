@@ -10,8 +10,14 @@ export interface Env {
   GITHUB_APP_ID: string;
   GITHUB_PRIVATE_KEY: string;
   GITHUB_WEBHOOK_SECRET: string;
+  GITHUB_OWNER: string;
+  GITHUB_REPO: string;
   DISCORD_FORUM_CHANNEL_ID?: string;
   DISCORD_PR_CHANNEL_ID?: string;
+  NOTION_API_KEY?: string;
+  NOTION_API_TOKEN?: string;
+  NOTION_DATABASE_ID?: string;
+  NOTION_DATA_SOURCE_ID?: string;
 }
 
 export default {

@@ -13,26 +13,12 @@ function base64urlEncode(data: Uint8Array | string): string {
 
 // PEM 형식의 private key 파싱 (PKCS#1 → PKCS#8 변환 포함)
 function pemToArrayBuffer(pem: string): ArrayBuffer {
-  // 앞뒤 공백 제거
   let decodedPem = pem.trim();
-
-  console.log('PEM input length:', decodedPem.length);
-  console.log('PEM starts with:', decodedPem.substring(0, 30));
 
   // base64로 인코딩된 PEM인 경우 먼저 디코딩
   if (!decodedPem.includes('-----BEGIN')) {
-    try {
-      // 혹시 있을 수 있는 특수문자 제거
-      decodedPem = decodedPem.replace(/[\r\n\s]/g, '');
-      console.log('Cleaned PEM length:', decodedPem.length);
-      decodedPem = atob(decodedPem);
-      console.log('Decoded PEM length:', decodedPem.length);
-      console.log('Decoded PEM starts with:', decodedPem.substring(0, 30));
-    } catch (e) {
-      console.error('Failed to decode base64 PEM:', e);
-      console.error('First 50 chars:', decodedPem.substring(0, 50));
-      throw e;
-    }
+    decodedPem = decodedPem.replace(/[\r\n\s]/g, '');
+    decodedPem = atob(decodedPem);
   }
 
   const isPkcs1 = decodedPem.includes('BEGIN RSA PRIVATE KEY');
@@ -51,15 +37,7 @@ function pemToArrayBuffer(pem: string): ArrayBuffer {
     paddedBase64 += '='.repeat(4 - remainder);
   }
 
-  console.log('Key base64 length:', base64.length, '-> padded:', paddedBase64.length);
-
-  let binary: string;
-  try {
-    binary = atob(paddedBase64);
-  } catch (e) {
-    console.error('Failed to decode key base64:', e);
-    throw e;
-  }
+  const binary = atob(paddedBase64);
   const pkcs1Bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
     pkcs1Bytes[i] = binary.charCodeAt(i);
@@ -278,7 +256,15 @@ export async function verifyGitHubSignature(
       .map(b => b.toString(16).padStart(2, '0'))
       .join('');
 
-    return signature === expectedSig;
+    // timing-safe 비교
+    if (signature.length !== expectedSig.length) return false;
+    const a = encoder.encode(signature);
+    const b = encoder.encode(expectedSig);
+    let result = 0;
+    for (let i = 0; i < a.length; i++) {
+      result |= a[i] ^ b[i];
+    }
+    return result === 0;
   } catch (error) {
     console.error('GitHub signature verification failed:', error);
     return false;

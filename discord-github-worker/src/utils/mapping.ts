@@ -27,11 +27,11 @@ export async function getIssueFromPost(
   const value = await kv.get(key);
   if (!value) return null;
 
-  const [owner, repo, issueNumber] = value.split('/');
+  const parts = value.split('/');
   return {
-    owner,
-    repo: repo.replace(/\/\d+$/, ''),
-    issueNumber: parseInt(issueNumber, 10)
+    owner: parts[0],
+    repo: parts[1],
+    issueNumber: parseInt(parts[2], 10)
   };
 }
 
