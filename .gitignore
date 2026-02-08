@@ -133,8 +133,16 @@ dmypy.json
 .DS_Store
 Thumbs.db
 
+# Node.js
+node_modules/
+
 # Trading bot specific
 config.json
 logs/
 *.log
 backtest_results/
+
+# bkit auto-generated
+docs/.bkit-memory.json
+docs/.pdca-status.json
+docs/.pdca-snapshots/
