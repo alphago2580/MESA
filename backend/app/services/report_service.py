@@ -3,14 +3,15 @@
 데이터 수집 → AI 분석 → DB 저장 → 푸시 알림 파이프라인을 관리합니다.
 """
 import json
+from datetime import date
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from ..models.user import User, ReportLevel
+from ..models.user import User, ReportLevel, ReportFrequency
 from ..models.report import Report
 from .data_service import data_service
-from .ai_service import generate_report
+from . import ai_service
 from .push_service import send_report_notification
 
 
@@ -50,7 +51,7 @@ async def generate_user_report(user: User, db: AsyncSession) -> Report:
     raw_data = await data_service.fetch_all_indicators(indicator_ids)
 
     # 2. AI 리포트 생성
-    result = await generate_report(raw_data, level, configs)
+    result = await ai_service.generate_report(raw_data, level, configs)
 
     # 3. DB 저장
     report = Report(
@@ -72,13 +73,32 @@ async def generate_user_report(user: User, db: AsyncSession) -> Report:
     return report
 
 
+async def generate_reports_by_frequency(db: AsyncSession, frequency: ReportFrequency) -> int:
+    """
+    특정 frequency의 모든 활성 사용자 리포트 생성.
+    성공적으로 생성된 리포트 수를 반환합니다.
+    """
+    result = await db.execute(
+        select(User).where(User.is_active == True, User.report_frequency == frequency)
+    )
+    users = result.scalars().all()
+
+    success_count = 0
+    for user in users:
+        try:
+            await generate_user_report(user, db)
+            success_count += 1
+        except Exception as e:
+            print(f"[REPORT] Error generating {frequency} report for user {user.id}: {e}")
+
+    return success_count
+
+
 async def generate_all_due_reports(db: AsyncSession):
     """
-    스케줄러에서 호출: 오늘 리포트를 받아야 할 모든 사용자에게 생성
+    스케줄러에서 호출: 오늘 리포트를 받아야 할 모든 사용자에게 생성.
+    report_frequency 기준으로 일간/주간/월간 조건을 체크합니다.
     """
-    from datetime import date, timedelta
-    from ..models.user import ReportFrequency
-
     today = date.today()
     result = await db.execute(select(User).where(User.is_active == True))
     users = result.scalars().all()

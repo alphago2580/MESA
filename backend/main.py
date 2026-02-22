@@ -24,14 +24,53 @@ async def lifespan(app: FastAPI):
 
 
 def _setup_scheduler():
-    from app.services.report_service import generate_all_due_reports
+    """
+    유저별 report_frequency 기준 일간/주간/월간 스케줄 등록.
+    - 일간(DAILY):   매일 오전 8시 KST (UTC 23:00)
+    - 주간(WEEKLY):  매주 월요일 오전 8시 KST (UTC 23:00)
+    - 월간(MONTHLY): 매월 1일 오전 8시 KST (UTC 23:00)
+    """
+    from app.services.report_service import generate_reports_by_frequency
+    from app.models.user import ReportFrequency
 
-    async def _run():
+    async def _run_daily():
         async with AsyncSessionLocal() as db:
-            await generate_all_due_reports(db)
+            count = await generate_reports_by_frequency(db, ReportFrequency.DAILY)
+            print(f"[SCHEDULER] daily: {count}개 리포트 생성 완료")
 
-    # 매일 오전 8시 KST = UTC 23:00
-    scheduler.add_job(_run, CronTrigger(hour=23, minute=0, timezone="UTC"), id="daily_reports")
+    async def _run_weekly():
+        async with AsyncSessionLocal() as db:
+            count = await generate_reports_by_frequency(db, ReportFrequency.WEEKLY)
+            print(f"[SCHEDULER] weekly: {count}개 리포트 생성 완료")
+
+    async def _run_monthly():
+        async with AsyncSessionLocal() as db:
+            count = await generate_reports_by_frequency(db, ReportFrequency.MONTHLY)
+            print(f"[SCHEDULER] monthly: {count}개 리포트 생성 완료")
+
+    # 일간: 매일 오전 8시 KST = UTC 23:00
+    scheduler.add_job(
+        _run_daily,
+        CronTrigger(hour=23, minute=0, timezone="UTC"),
+        id="daily_reports",
+        replace_existing=True,
+    )
+
+    # 주간: 매주 월요일 오전 8시 KST = UTC 23:00
+    scheduler.add_job(
+        _run_weekly,
+        CronTrigger(day_of_week="mon", hour=23, minute=0, timezone="UTC"),
+        id="weekly_reports",
+        replace_existing=True,
+    )
+
+    # 월간: 매월 1일 오전 8시 KST = UTC 23:00
+    scheduler.add_job(
+        _run_monthly,
+        CronTrigger(day=1, hour=23, minute=0, timezone="UTC"),
+        id="monthly_reports",
+        replace_existing=True,
+    )
 
 
 app = FastAPI(
