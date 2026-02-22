@@ -94,6 +94,18 @@ def mock_data_service():
 
 
 # ──────────────────────────────────────────────
+# Push 서비스 mock (webpush 실제 전송 차단)
+# ──────────────────────────────────────────────
+
+@pytest.fixture(autouse=True)
+def mock_push_service():
+    """Web Push 실제 전송을 mock으로 차단 (모든 테스트에 자동 적용)"""
+    with patch("app.services.push_service.webpush") as mock_webpush:
+        mock_webpush.return_value = None
+        yield mock_webpush
+
+
+# ──────────────────────────────────────────────
 # 공통 헬퍼
 # ──────────────────────────────────────────────
 
