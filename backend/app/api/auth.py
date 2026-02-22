@@ -25,6 +25,12 @@ class UserCreate(BaseModel):
     password: str
 
 
+class ProfileUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -115,6 +121,49 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
 
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)):
+    return UserResponse(
+        id=current_user.id,
+        email=current_user.email,
+        report_level=current_user.report_level.value,
+        report_frequency=current_user.report_frequency.value,
+        selected_indicators=current_user.selected_indicators or [],
+        push_enabled=current_user.push_enabled,
+    )
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_me(
+    profile: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """프로필 수정 — 이메일 및/또는 비밀번호 변경"""
+    # 새 비밀번호 변경 시 현재 비밀번호 필수
+    if profile.new_password is not None:
+        if profile.current_password is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="비밀번호 변경 시 현재 비밀번호를 입력해야 합니다",
+            )
+        if not verify_password(profile.current_password, current_user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="현재 비밀번호가 올바르지 않습니다",
+            )
+        current_user.hashed_password = get_password_hash(profile.new_password)
+
+    # 이메일 변경 시 중복 확인
+    if profile.email is not None and profile.email != current_user.email:
+        result = await db.execute(select(User).where(User.email == profile.email))
+        if result.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="이미 사용 중인 이메일입니다",
+            )
+        current_user.email = profile.email
+
+    await db.commit()
+    await db.refresh(current_user)
     return UserResponse(
         id=current_user.id,
         email=current_user.email,
