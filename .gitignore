@@ -157,3 +157,6 @@ frontend/node_modules/
 docs/.bkit-memory.json
 docs/.pdca-status.json
 docs/.pdca-snapshots/
+
+# TokenBurner
+.tokenburner/
