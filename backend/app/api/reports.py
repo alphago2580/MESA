@@ -103,6 +103,23 @@ async def get_report(
     )
 
 
+@router.delete("/{report_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_report(
+    report_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """리포트 삭제 (본인 소유 리포트만 삭제 가능)"""
+    result = await db.execute(
+        select(Report).where(Report.id == report_id, Report.user_id == current_user.id)
+    )
+    report = result.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="리포트를 찾을 수 없습니다")
+    await db.delete(report)
+    await db.commit()
+
+
 @router.post("/generate", status_code=status.HTTP_201_CREATED, response_model=ReportResponse)
 async def generate_report_now(
     db: AsyncSession = Depends(get_db),
