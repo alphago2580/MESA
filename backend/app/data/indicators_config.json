@@ -1,0 +1,360 @@
+{
+  "version": "1.0.0",
+  "description": "MESA v2 경제 지표 설정",
+  "categories": [
+    {
+      "id": "interest_rates",
+      "name_ko": "금리/통화정책",
+      "name_en": "Interest Rates & Monetary Policy"
+    },
+    {
+      "id": "inflation",
+      "name_ko": "물가/인플레이션",
+      "name_en": "Inflation"
+    },
+    {
+      "id": "employment",
+      "name_ko": "고용",
+      "name_en": "Employment"
+    },
+    {
+      "id": "growth",
+      "name_ko": "경제성장",
+      "name_en": "Economic Growth"
+    },
+    {
+      "id": "market_indices",
+      "name_ko": "시장지수",
+      "name_en": "Market Indices"
+    },
+    {
+      "id": "fx_commodities",
+      "name_ko": "환율/원자재",
+      "name_en": "FX & Commodities"
+    }
+  ],
+  "indicators": [
+    {
+      "id": "fed_funds_rate",
+      "name_ko": "미국 기준금리",
+      "name_en": "Federal Funds Effective Rate",
+      "category": "interest_rates",
+      "source": "FRED",
+      "fred_id": "DFF",
+      "fred_id_monthly": "FEDFUNDS",
+      "update_frequency": "daily",
+      "importance": 5,
+      "description": "미 연준이 설정하는 기준금리. FOMC 회의(연 8회)에서 결정되며, 모든 자산 가격의 기준.",
+      "default_selected": true
+    },
+    {
+      "id": "bok_base_rate",
+      "name_ko": "한국 기준금리",
+      "name_en": "Bank of Korea Base Rate",
+      "category": "interest_rates",
+      "source": "ECOS",
+      "ecos_stat_code": "722Y001",
+      "ecos_item_code": "0101000",
+      "update_frequency": "event",
+      "importance": 5,
+      "description": "한국은행 금융통화위원회에서 결정하는 기준금리. 한국 채권/대출 금리의 기준.",
+      "default_selected": true
+    },
+    {
+      "id": "us_10y_treasury",
+      "name_ko": "미국 10년물 국채금리",
+      "name_en": "10-Year Treasury Constant Maturity Rate",
+      "category": "interest_rates",
+      "source": "FRED",
+      "fred_id": "DGS10",
+      "fred_id_monthly": "GS10",
+      "update_frequency": "daily",
+      "importance": 5,
+      "description": "장기 금리의 벤치마크. 모기지/기업대출 금리의 기준이며 경기 전망을 반영.",
+      "default_selected": true
+    },
+    {
+      "id": "kr_10y_bond",
+      "name_ko": "한국 10년물 국채금리",
+      "name_en": "Korea 10-Year Government Bond Yield",
+      "category": "interest_rates",
+      "source": "ECOS",
+      "yahoo_symbol": "^TNX",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "한국 장기 금리의 벤치마크. 외국인 채권 투자 자금 흐름에 영향.",
+      "default_selected": false
+    },
+    {
+      "id": "us_2y_treasury",
+      "name_ko": "미국 2년물 국채금리",
+      "name_en": "2-Year Treasury Constant Maturity Rate",
+      "category": "interest_rates",
+      "source": "FRED",
+      "fred_id": "DGS2",
+      "fred_id_monthly": "GS2",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "단기 금리 지표. Fed의 통화정책 기대를 가장 직접적으로 반영.",
+      "default_selected": false
+    },
+    {
+      "id": "us_yield_spread_10y2y",
+      "name_ko": "장단기 금리차 (10Y-2Y)",
+      "name_en": "10-Year Minus 2-Year Treasury Spread",
+      "category": "interest_rates",
+      "source": "FRED",
+      "fred_id": "T10Y2Y",
+      "update_frequency": "daily",
+      "importance": 5,
+      "description": "장단기 금리 역전은 경기침체의 가장 신뢰성 높은 선행지표.",
+      "default_selected": true
+    },
+    {
+      "id": "us_cpi",
+      "name_ko": "미국 소비자물가지수 (CPI)",
+      "name_en": "Consumer Price Index (All Urban Consumers)",
+      "category": "inflation",
+      "source": "FRED",
+      "fred_id": "CPIAUCSL",
+      "fred_id_core": "CPILFESL",
+      "update_frequency": "monthly",
+      "importance": 5,
+      "description": "미국 소비자 물가 변동 측정. Fed 통화정책 결정에 핵심 영향.",
+      "default_selected": true
+    },
+    {
+      "id": "kr_cpi",
+      "name_ko": "한국 소비자물가지수 (CPI)",
+      "name_en": "Korea Consumer Price Index",
+      "category": "inflation",
+      "source": "KOSIS",
+      "update_frequency": "monthly",
+      "importance": 4,
+      "description": "한국 소비자 물가 수준 측정. 한국은행 금리 결정의 핵심 참고 지표.",
+      "default_selected": false
+    },
+    {
+      "id": "us_ppi",
+      "name_ko": "미국 생산자물가지수 (PPI)",
+      "name_en": "Producer Price Index (Final Demand)",
+      "category": "inflation",
+      "source": "FRED",
+      "fred_id": "PPIFES",
+      "update_frequency": "monthly",
+      "importance": 3,
+      "description": "생산자 관점의 물가 변동. CPI의 선행지표 역할.",
+      "default_selected": false
+    },
+    {
+      "id": "us_pce",
+      "name_ko": "개인소비지출 물가지수 (PCE)",
+      "name_en": "Personal Consumption Expenditures Price Index",
+      "category": "inflation",
+      "source": "FRED",
+      "fred_id": "PCEPI",
+      "fred_id_core": "PCEPILFE",
+      "update_frequency": "monthly",
+      "importance": 5,
+      "description": "Fed가 공식적으로 선호하는 물가 지표. 2% 목표의 기준.",
+      "default_selected": true
+    },
+    {
+      "id": "us_unemployment",
+      "name_ko": "미국 실업률",
+      "name_en": "US Unemployment Rate",
+      "category": "employment",
+      "source": "FRED",
+      "fred_id": "UNRATE",
+      "update_frequency": "monthly",
+      "importance": 5,
+      "description": "미국 노동시장 상태의 핵심 지표. Fed 이중 책무의 한 축.",
+      "default_selected": true
+    },
+    {
+      "id": "us_nfp",
+      "name_ko": "비농업부문 고용 (NFP)",
+      "name_en": "Nonfarm Payrolls",
+      "category": "employment",
+      "source": "FRED",
+      "fred_id": "PAYEMS",
+      "update_frequency": "monthly",
+      "importance": 5,
+      "description": "매월 신규 고용 증가 수. 경제 활동의 강도를 가장 직접적으로 표시.",
+      "default_selected": true
+    },
+    {
+      "id": "kr_unemployment",
+      "name_ko": "한국 실업률",
+      "name_en": "Korea Unemployment Rate",
+      "category": "employment",
+      "source": "KOSIS",
+      "update_frequency": "monthly",
+      "importance": 3,
+      "description": "한국 노동시장 상태 지표. 계절 변동이 크므로 계절조정치 확인 필요.",
+      "default_selected": false
+    },
+    {
+      "id": "us_gdp",
+      "name_ko": "미국 GDP",
+      "name_en": "US Real Gross Domestic Product",
+      "category": "growth",
+      "source": "FRED",
+      "fred_id": "GDPC1",
+      "update_frequency": "quarterly",
+      "importance": 4,
+      "description": "미국 경제 규모와 성장률. 속보치/잠정치/확정치 3차 발표.",
+      "default_selected": true
+    },
+    {
+      "id": "kr_gdp",
+      "name_ko": "한국 GDP",
+      "name_en": "Korea Gross Domestic Product",
+      "category": "growth",
+      "source": "ECOS",
+      "update_frequency": "quarterly",
+      "importance": 4,
+      "description": "한국 경제 성장률. 수출 의존도가 높아 글로벌 경기에 민감.",
+      "default_selected": false
+    },
+    {
+      "id": "ism_manufacturing_pmi",
+      "name_ko": "ISM 제조업 PMI",
+      "name_en": "ISM Manufacturing PMI",
+      "category": "growth",
+      "source": "ISM",
+      "fred_id_related": "NAPM",
+      "update_frequency": "monthly",
+      "importance": 4,
+      "description": "50 기준 제조업 경기 확장/수축을 나타내는 선행지표.",
+      "default_selected": true
+    },
+    {
+      "id": "ism_services_pmi",
+      "name_ko": "ISM 서비스업 PMI",
+      "name_en": "ISM Services PMI",
+      "category": "growth",
+      "source": "ISM",
+      "fred_id_related": "NMFCI",
+      "update_frequency": "monthly",
+      "importance": 4,
+      "description": "미국 GDP의 약 70%를 차지하는 서비스업 경기 선행지표.",
+      "default_selected": true
+    },
+    {
+      "id": "sp500",
+      "name_ko": "S&P 500",
+      "name_en": "S&P 500 Index",
+      "category": "market_indices",
+      "source": "FRED",
+      "fred_id": "SP500",
+      "yahoo_symbol": "^GSPC",
+      "update_frequency": "daily",
+      "importance": 5,
+      "description": "미국 대형주 500개 대표 지수. 글로벌 주식시장의 벤치마크.",
+      "default_selected": true
+    },
+    {
+      "id": "nasdaq",
+      "name_ko": "나스닥 종합지수",
+      "name_en": "NASDAQ Composite Index",
+      "category": "market_indices",
+      "source": "FRED",
+      "fred_id": "NASDAQCOM",
+      "yahoo_symbol": "^IXIC",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "기술주 중심의 미국 주식 지수. 금리 민감도가 S&P 500보다 높음.",
+      "default_selected": true
+    },
+    {
+      "id": "kospi",
+      "name_ko": "KOSPI",
+      "name_en": "Korea Composite Stock Price Index",
+      "category": "market_indices",
+      "source": "KRX",
+      "yahoo_symbol": "^KS11",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "한국 유가증권시장 대표 지수. 반도체, 자동차, 금융 대형주 중심.",
+      "default_selected": true
+    },
+    {
+      "id": "kosdaq",
+      "name_ko": "KOSDAQ",
+      "name_en": "KOSDAQ Index",
+      "category": "market_indices",
+      "source": "KRX",
+      "yahoo_symbol": "^KQ11",
+      "update_frequency": "daily",
+      "importance": 3,
+      "description": "한국 중소형 기술/성장주 시장 지수. 바이오, IT 중심.",
+      "default_selected": false
+    },
+    {
+      "id": "vix",
+      "name_ko": "VIX (공포지수)",
+      "name_en": "CBOE Volatility Index",
+      "category": "market_indices",
+      "source": "FRED",
+      "fred_id": "VIXCLS",
+      "yahoo_symbol": "^VIX",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "S&P 500 옵션 내재변동성 기반. 시장 공포/불안 수준 측정.",
+      "default_selected": true
+    },
+    {
+      "id": "usd_krw",
+      "name_ko": "원달러 환율 (USD/KRW)",
+      "name_en": "US Dollar / Korean Won Exchange Rate",
+      "category": "fx_commodities",
+      "source": "FRED",
+      "fred_id": "DEXKOUS",
+      "yahoo_symbol": "KRW=X",
+      "update_frequency": "daily",
+      "importance": 5,
+      "description": "한국 경제에 가장 직접적인 환율. 수출기업 실적과 외국인 투자에 영향.",
+      "default_selected": true
+    },
+    {
+      "id": "dxy",
+      "name_ko": "달러인덱스 (DXY)",
+      "name_en": "US Dollar Index",
+      "category": "fx_commodities",
+      "source": "FRED",
+      "fred_id": "DTWEXBGS",
+      "yahoo_symbol": "DX-Y.NYB",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "주요 6개 통화 대비 달러 강세 지수. 신흥국 자산과 원자재에 영향.",
+      "default_selected": true
+    },
+    {
+      "id": "wti_crude",
+      "name_ko": "WTI 원유",
+      "name_en": "West Texas Intermediate Crude Oil",
+      "category": "fx_commodities",
+      "source": "FRED",
+      "fred_id": "DCOILWTICO",
+      "yahoo_symbol": "CL=F",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "글로벌 에너지 가격 벤치마크. 인플레이션과 운송비에 직접 영향.",
+      "default_selected": true
+    },
+    {
+      "id": "gold",
+      "name_ko": "금 가격",
+      "name_en": "Gold Price (Troy Ounce)",
+      "category": "fx_commodities",
+      "source": "FRED",
+      "fred_id": "GOLDAMGBD228NLBM",
+      "yahoo_symbol": "GC=F",
+      "update_frequency": "daily",
+      "importance": 4,
+      "description": "대표적 안전자산. 인플레이션 헤지, 실질금리와 역상관 관계.",
+      "default_selected": true
+    }
+  ]
+}

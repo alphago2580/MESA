@@ -1,279 +1,108 @@
-# MESA - Crypto Trading Bot(견본코드라 다바꿔야합니다)
+# MESA v2 - AI 경제 리포트 서비스
 
-[한국어 문서](README_ko.md)
+AI가 분석한 거시경제 인사이트를 개인화된 HTML 리포트로 받아보는 서비스입니다.
 
-A Python-based cryptocurrency trading bot using **ccxt** library with **asyncio** for fast execution. MESA provides a simple and extensible framework for implementing trading strategies and backtesting them on historical data.
+## 핵심 기능
 
-## Features
+- **AI 인사이트**: Claude API 기반 심층 경제 분석
+- **레벨별 리포트**: 주린이 / 일반 / 전문가 3단계 깊이 조절
+- **두괄식 구성**: 모든 리포트 맨 앞에 3줄 Executive Summary
+- **구독 설정**: 일간 / 주간 / 월간 수신 주기 선택
+- **지표 선택**: 금리, 물가, 고용, GDP, 주가지수, 환율, 원자재 등 24개 지표
+- **앱 알림**: Web Push (PWA) 기반 브라우저 알림
+- **HTML 리포트**: 반응형, 다크모드 지원, 인쇄 가능
 
-- ⚡ **Fast Async Execution**: Built with asyncio for high-performance concurrent operations
-- 🔌 **Multi-Exchange Support**: Uses ccxt library supporting 100+ cryptocurrency exchanges
-- 📊 **Strategy Framework**: Simple base class for implementing custom trading strategies
-- 📈 **Backtesting Engine**: Test strategies on historical data before live trading
-- 🎯 **Example Strategy**: Includes Simple Moving Average (SMA) crossover strategy
-- 🔧 **Configurable**: Easy JSON-based configuration for exchange and trading parameters
-
-## Project Structure
+## 프로젝트 구조
 
 ```
 MESA/
-├── src/
-│   ├── __init__.py           # Package initialization
-│   ├── bot.py                # Main trading bot
-│   ├── exchange.py           # Exchange connector using ccxt
-│   ├── strategies/
-│   │   ├── __init__.py       # Strategy base class
-│   │   └── sma_strategy.py   # SMA crossover strategy
-│   └── backtesting/
-│       └── __init__.py       # Backtesting engine
-├── tests/                    # Test files
-├── main.py                   # Main entry point for live trading
-├── example_backtest.py       # Example backtest script
-├── config.example.json       # Example configuration file
-├── requirements.txt          # Python dependencies
-└── README.md                 # This file
+├── backend/               # FastAPI 백엔드
+│   ├── app/
+│   │   ├── api/           # API 라우터 (auth, reports, settings, indicators)
+│   │   ├── core/          # 설정, DB 연결
+│   │   ├── models/        # SQLAlchemy 모델 (User, Report)
+│   │   ├── services/      # 비즈니스 로직
+│   │   │   ├── data_service.py      # FRED/Yahoo Finance 데이터 수집
+│   │   │   ├── ai_service.py        # Claude API 인사이트 생성
+│   │   │   ├── template_renderer.py # HTML 리포트 렌더링
+│   │   │   ├── report_service.py    # 리포트 생성 오케스트레이션
+│   │   │   └── push_service.py      # Web Push 알림
+│   │   ├── templates/     # Jinja2 HTML 리포트 템플릿
+│   │   └── data/          # 경제 지표 메타데이터 (JSON)
+│   └── main.py            # 앱 엔트리포인트 + 스케줄러
+├── frontend/              # Next.js 14 프론트엔드
+│   ├── src/app/           # App Router 페이지
+│   │   ├── page.tsx       # 대시보드
+│   │   ├── login/         # 로그인/회원가입
+│   │   ├── reports/[id]/  # 리포트 뷰어
+│   │   └── settings/      # 리포트 설정
+│   ├── src/lib/           # API 클라이언트, 타입
+│   └── public/sw.js       # Service Worker (Push 알림)
+├── docs/                  # 설계 문서
+│   ├── architecture.md    # 시스템 아키텍처
+│   ├── spec.md            # 기능 스펙
+│   └── indicators.md      # 경제 지표 목록
+└── legacy/                # MESA v1 (crypto trading bot) 아카이브
 ```
 
-## Installation
+## 빠른 시작
 
-### Prerequisites
+### 1. 백엔드 실행
 
-- Python 3.8 or higher
-- pip package manager
-
-### Setup
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/alphago2580/MESA.git
-cd MESA
-```
+cd backend
+cp .env.example .env
+# .env 파일에 ANTHROPIC_API_KEY 등 설정
 
-2. Install dependencies:
-```bash
 pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
 ```
 
-3. Create configuration file:
-```bash
-cp config.example.json config.json
-```
-
-4. Edit `config.json` with your exchange API credentials and trading parameters:
-```json
-{
-  "exchange": {
-    "name": "binance",
-    "api_key": "YOUR_API_KEY",
-    "secret": "YOUR_SECRET",
-    "enableRateLimit": true
-  },
-  "trading": {
-    "symbol": "BTC/USDT",
-    "timeframe": "1m",
-    "amount": 0.001,
-    "strategy": "SimpleMovingAverage"
-  },
-  "backtesting": {
-    "initial_balance": 10000
-  }
-}
-```
-
-## Usage
-
-### Running Backtests
-
-Test your strategy on historical data before live trading:
+### 2. 프론트엔드 실행
 
 ```bash
-python example_backtest.py
+cd frontend
+npm install
+npm run dev
+# http://localhost:3000
 ```
 
-This will:
-1. Fetch historical OHLCV data from the exchange
-2. Run the strategy on the data
-3. Display performance metrics
-4. Save results to `backtest_results.json`
+## 환경 변수
 
-### Live Trading
+`backend/.env` 파일:
 
-**⚠️ Warning**: Live trading involves real money. Start with small amounts and paper trading if available.
+| 변수 | 필수 | 설명 |
+|------|------|------|
+| `ANTHROPIC_API_KEY` | ✅ | Claude API 키 |
+| `FRED_API_KEY` | 권장 | FRED 경제 데이터 API 키 (무료) |
+| `SECRET_KEY` | ✅ | JWT 서명 키 |
+| `VAPID_PRIVATE_KEY` | 선택 | Web Push 알림용 |
+| `VAPID_PUBLIC_KEY` | 선택 | Web Push 알림용 |
 
-```bash
-python main.py
-```
+## API 문서
 
-The bot will:
-1. Connect to the configured exchange
-2. Monitor the market in real-time
-3. Execute trades based on strategy signals
-4. Log all activities to `trading_bot.log`
+백엔드 실행 후: http://localhost:8000/docs
 
-### Stop the Bot
+## 경제 지표 (24개)
 
-Press `Ctrl+C` to gracefully stop the trading bot.
+| 카테고리 | 지표 예시 |
+|----------|-----------|
+| 금리/통화정책 | 미국 기준금리, 장단기 스프레드, 10년물 국채 |
+| 물가/인플레이션 | CPI, PCE, PPI |
+| 고용 | 실업률, NFP |
+| 경제성장 | GDP, ISM PMI |
+| 시장지수 | S&P 500, KOSPI, VIX |
+| 환율/원자재 | USD/KRW, DXY, WTI, 금 |
 
-## Creating Custom Strategies
+## 기술 스택
 
-To create your own trading strategy:
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, PWA
+- **Backend**: FastAPI, SQLAlchemy, APScheduler
+- **AI**: Claude API (claude-sonnet-4-6)
+- **데이터**: FRED API, Yahoo Finance, World Bank
+- **알림**: Web Push (pywebpush)
+- **DB**: SQLite (개발) / PostgreSQL (프로덕션)
 
-1. Create a new file in `src/strategies/` (e.g., `my_strategy.py`)
+## 라이선스
 
-2. Inherit from the `Strategy` base class:
-
-```python
-from typing import List
-from . import Strategy
-
-class MyStrategy(Strategy):
-    def __init__(self):
-        super().__init__(name="MyStrategy")
-    
-    async def analyze(self, ohlcv_data: List[List]) -> str:
-        """
-        Analyze market data and return trading signal.
-        
-        Args:
-            ohlcv_data: OHLCV candlestick data
-            
-        Returns:
-            'buy', 'sell', or 'hold'
-        """
-        # Your strategy logic here
-        # Convert data to DataFrame using self.convert_to_dataframe()
-        df = self.convert_to_dataframe(ohlcv_data)
-        
-        # Implement your analysis
-        # Return 'buy', 'sell', or 'hold'
-        return 'hold'
-```
-
-3. Use your strategy in `main.py`:
-
-```python
-from src.strategies.my_strategy import MyStrategy
-
-strategy = MyStrategy()
-bot = TradingBot(exchange_config, trading_config, strategy)
-```
-
-## Strategy Implementation Example
-
-The included `SimpleMovingAverage` strategy demonstrates the strategy pattern:
-
-- Calculates short-term and long-term moving averages
-- Generates buy signal when short MA crosses above long MA (bullish crossover)
-- Generates sell signal when short MA crosses below long MA (bearish crossover)
-- Manages position state to avoid duplicate signals
-
-## Backtesting
-
-The backtesting engine provides:
-
-- **Position Management**: Simulates opening and closing positions
-- **Performance Metrics**: 
-  - Total return and return percentage
-  - Win rate
-  - Average win/loss
-  - Number of trades
-- **Trade History**: Complete log of all simulated trades
-- **Flexible Configuration**: Adjustable trade amounts and parameters
-
-## API Documentation
-
-### ExchangeConnector
-
-Async wrapper for ccxt exchange operations:
-
-- `connect()`: Establish exchange connection
-- `fetch_ticker(symbol)`: Get current price
-- `fetch_ohlcv(symbol, timeframe, limit)`: Get candlestick data
-- `create_market_order(symbol, side, amount)`: Execute market order
-- `fetch_balance()`: Get account balance
-
-### Strategy Base Class
-
-Abstract class for implementing strategies:
-
-- `analyze(ohlcv_data)`: Main method to implement - returns 'buy', 'sell', or 'hold'
-- `convert_to_dataframe(ohlcv_data)`: Convert raw data to pandas DataFrame
-- `set_position(position, entry_price)`: Update position state
-- `get_position()`: Get current position
-
-### TradingBot
-
-Main bot coordinating trading operations:
-
-- `start()`: Start the trading bot
-- `stop()`: Stop the trading bot
-- `get_account_info()`: Get balance and position info
-
-### Backtester
-
-Test strategies on historical data:
-
-- `run(strategy, ohlcv_data, trade_amount)`: Execute backtest
-- Returns detailed performance metrics
-
-## Configuration
-
-### Exchange Configuration
-
-- `name`: Exchange name (binance, coinbase, kraken, etc.)
-- `api_key`: Your API key
-- `secret`: Your API secret
-- `enableRateLimit`: Enable rate limiting (recommended: true)
-
-### Trading Configuration
-
-- `symbol`: Trading pair (e.g., "BTC/USDT")
-- `timeframe`: Candlestick timeframe ("1m", "5m", "1h", etc.)
-- `amount`: Order size in base currency
-- `strategy`: Strategy name (for reference)
-
-### Backtesting Configuration
-
-- `initial_balance`: Starting capital for backtesting
-
-## Safety and Best Practices
-
-1. **Start Small**: Test with minimal amounts initially
-2. **Use Testnet**: Many exchanges offer testnet/sandbox for practice
-3. **Monitor Logs**: Always check logs for errors or unexpected behavior
-4. **Backtest First**: Thoroughly backtest strategies before live trading
-5. **Set Limits**: Implement stop-loss and take-profit mechanisms
-6. **Secure Credentials**: Never commit API keys to version control
-7. **Understand Risks**: Cryptocurrency trading carries significant risk
-
-## Requirements
-
-- ccxt >= 4.0.0
-- aiohttp >= 3.8.0
-- pandas >= 2.0.0
-- numpy >= 1.24.0
-- python-dotenv >= 1.0.0
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Disclaimer
-
-This software is for educational purposes only. Use at your own risk. The authors are not responsible for any financial losses incurred through the use of this trading bot. Cryptocurrency trading involves substantial risk of loss.
-
-## Support
-
-For issues, questions, or suggestions, please open an issue on GitHub.
-
-## Author
-
-sin seongsik
-
----
-
-**Happy Trading! 📈🚀**
+MIT

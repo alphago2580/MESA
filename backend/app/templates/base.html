@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 860px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Header */
+  .header { border-bottom: 2px solid {{ theme_color }}; padding-bottom: 16px; margin-bottom: 24px; }
+  .header .badge {
+    display: inline-block;
+    background: {{ theme_color }};
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+  }
+  .header h1 { font-size: 24px; font-weight: 800; color: white; }
+  .header .date { color: #888; font-size: 13px; margin-top: 4px; }
+
+  /* Executive Summary */
+  .executive-summary {
+    background: linear-gradient(135deg, rgba({{ theme_rgb }}, 0.15), rgba({{ theme_rgb }}, 0.05));
+    border: 1px solid rgba({{ theme_rgb }}, 0.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .executive-summary h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: {{ theme_color }};
+    margin-bottom: 12px;
+  }
+  .summary-line {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .summary-line:last-child { border-bottom: none; }
+  .summary-num { color: {{ theme_color }}; font-weight: 700; min-width: 20px; }
+
+  /* Indicator Cards */
+  .indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .indicator-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 14px;
+    transition: border-color 0.2s;
+  }
+  .indicator-card:hover { border-color: {{ theme_color }}40; }
+  .indicator-card .name { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .indicator-card .value { font-size: 20px; font-weight: 700; color: white; }
+  .indicator-card .change { font-size: 12px; margin-top: 4px; }
+  .change.up { color: #ef5350; }
+  .change.down { color: #26a69a; }
+  .change.flat { color: #888; }
+
+  /* Sections */
+  .section {
+    margin-bottom: 24px;
+    background: #111;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .section h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #222;
+  }
+  .section-content { color: #ccc; font-size: 14px; }
+  .section-content p { margin-bottom: 8px; }
+  .section-content ul { padding-left: 18px; }
+  .section-content li { margin-bottom: 4px; }
+  .section-content strong { color: white; }
+  .section-content em { color: {{ theme_color }}; font-style: normal; }
+
+  /* Footer */
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #222;
+    color: #555;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  /* Print */
+  @media print {
+    body { background: white; color: #111; }
+    .container { max-width: 100%; }
+    .header { border-color: #333; }
+    .section { background: #fafafa; border: 1px solid #ddd; }
+    .indicator-card { background: #f5f5f5; border-color: #ddd; }
+    .indicator-card .value { color: #111; }
+    .executive-summary { border-color: #ccc; }
+  }
+
+  /* Dark mode toggle (optional) */
+  @media (prefers-color-scheme: light) {
+    body { background: #fafafa; color: #222; }
+    .section { background: white; border: 1px solid #e0e0e0; }
+    .section h2 { color: #111; border-bottom-color: #e0e0e0; }
+    .section-content { color: #444; }
+    .section-content strong { color: #111; }
+    .indicator-card { background: white; border-color: #e0e0e0; }
+    .indicator-card .name { color: #666; }
+    .indicator-card .value { color: #111; }
+    .executive-summary { background: linear-gradient(135deg, rgba({{ theme_rgb }}, 0.08), rgba({{ theme_rgb }}, 0.02)); border-color: rgba({{ theme_rgb }}, 0.2); }
+    .header { border-bottom-color: {{ theme_color }}; }
+    .summary-line { border-bottom-color: rgba(0,0,0,0.06); }
+    .footer { border-top-color: #e0e0e0; color: #999; }
+  }
+
+  {% block extra_styles %}{% endblock %}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="badge">MESA &middot; {{ level_label }} 레벨</div>
+    <h1>{{ title }}</h1>
+    <div class="date">생성일: {{ generated_date }}</div>
+  </div>
+
+  <div class="executive-summary">
+    <h2>{% block summary_icon %}{% endblock %} Executive Summary</h2>
+    {% for line in summary_lines %}
+    {% if line %}
+    <div class="summary-line">
+      <span class="summary-num">{{ loop.index }}</span>
+      <span>{{ line }}</span>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  {% block before_sections %}
+  <div class="indicators-grid">
+    {% for card in indicator_cards %}
+    <div class="indicator-card">
+      <div class="name">{{ card.name }}</div>
+      <div class="value">{{ card.value }}</div>
+      {% if card.change_str %}
+      <div class="change {{ card.change_class }}">{{ card.change_str }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endblock %}
+
+  {% for section in sections %}
+  <div class="section">
+    <h2>{{ section.title }}</h2>
+    <div class="section-content">{{ section.content | safe }}</div>
+  </div>
+  {% endfor %}
+
+  {% block after_sections %}{% endblock %}
+
+  <div class="footer">
+    이 리포트는 MESA AI가 자동 생성했습니다. 투자 결정에 참고만 하시고, 전문가 조언을 구하시기 바랍니다.
+  </div>
+</div>
+</body>
+</html>

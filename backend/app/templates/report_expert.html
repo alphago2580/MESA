@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block summary_icon %}📈{% endblock %}
+
+{% block extra_styles %}
+  /* 전문가 레벨: 데이터 밀도 높음, 간결하고 기술적 */
+  .section-content { font-size: 13px; line-height: 1.7; }
+  .section { padding: 16px 20px; }
+
+  /* 데이터 테이블 */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12px;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 2px solid #333;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+  }
+  .data-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #1e1e1e;
+    color: #ccc;
+  }
+  .data-table tr:hover td { background: rgba(156, 39, 176, 0.05); }
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* 정량 데이터 강조 */
+  .quant-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .quant-item {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+  }
+  .quant-item .label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+  .quant-item .val { font-size: 18px; font-weight: 700; color: white; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+  /* 리스크 매트릭스 */
+  .risk-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .risk-item {
+    background: #141414;
+    border-radius: 6px;
+    padding: 10px 12px;
+    border-left: 3px solid;
+  }
+  .risk-item.high { border-left-color: #ef5350; }
+  .risk-item.medium { border-left-color: #FF9800; }
+  .risk-item.low { border-left-color: #26a69a; }
+  .risk-item .risk-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+  .risk-item .risk-desc { font-size: 12px; color: #ccc; }
+
+  /* 지표 카드: 더 컴팩트하게 */
+  .indicators-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .indicator-card { padding: 10px 12px; }
+  .indicator-card .name { font-size: 11px; }
+  .indicator-card .value { font-size: 18px; }
+
+  /* 기술적 참조 */
+  .tech-note {
+    background: rgba(156, 39, 176, 0.06);
+    border: 1px solid rgba(156, 39, 176, 0.15);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 12px;
+    color: #999;
+  }
+  .tech-note::before {
+    content: "REF";
+    display: inline-block;
+    background: #9C27B0;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-right: 6px;
+  }
+
+  @media print {
+    .data-table th { border-bottom-color: #999; }
+    .data-table td { border-bottom-color: #ddd; }
+  }
+
+  @media (prefers-color-scheme: light) {
+    .data-table th { border-bottom-color: #ddd; color: #666; }
+    .data-table td { border-bottom-color: #eee; color: #333; }
+    .data-table tr:hover td { background: rgba(156, 39, 176, 0.03); }
+    .quant-item { background: #f8f8f8; border-color: #e0e0e0; }
+    .quant-item .val { color: #111; }
+    .risk-item { background: #f8f8f8; }
+    .risk-item .risk-desc { color: #444; }
+    .tech-note { background: rgba(156, 39, 176, 0.03); border-color: rgba(156, 39, 176, 0.1); }
+  }
+{% endblock %}
+
+{% block after_sections %}
+  {% if raw_data_table %}
+  <div class="section">
+    <h2>부록: 원시 데이터</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>지표</th>
+          <th class="num">현재값</th>
+          <th class="num">변동(%)</th>
+          <th>기준일</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in raw_data_table %}
+        <tr>
+          <td>{{ row.name }}</td>
+          <td class="num">{{ row.value }}</td>
+          <td class="num {{ 'up' if row.change_pct and row.change_pct > 0 else 'down' }}">
+            {{ "%.2f"|format(row.change_pct) if row.change_pct is not none else "-" }}%
+          </td>
+          <td>{{ row.date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block summary_icon %}📊{% endblock %}
+
+{% block extra_styles %}
+  /* 일반 레벨: 균형잡힌 정보 밀도 */
+  .section-content { font-size: 14px; line-height: 1.8; }
+
+  /* 데이터 하이라이트 */
+  .data-highlight {
+    display: inline-block;
+    background: rgba(33, 150, 243, 0.1);
+    border: 1px solid rgba(33, 150, 243, 0.2);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  /* 트렌드 비교 영역 */
+  .trend-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .trend-item {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .trend-item .label { font-size: 11px; color: #888; margin-bottom: 2px; }
+  .trend-item .val { font-size: 16px; font-weight: 700; color: white; }
+
+  /* 지표 간 상관관계 표시 */
+  .correlation-note {
+    background: rgba(33, 150, 243, 0.06);
+    border-left: 3px solid #2196F3;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #aaa;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .trend-item { background: #f5f5f5; }
+    .trend-item .val { color: #111; }
+    .data-highlight { background: rgba(33, 150, 243, 0.05); }
+    .correlation-note { background: rgba(33, 150, 243, 0.03); }
+  }
+{% endblock %}

@@ -136,11 +136,22 @@ Thumbs.db
 # Node.js
 node_modules/
 
-# Trading bot specific
+# Trading bot specific (legacy)
 config.json
 logs/
-*.log
 backtest_results/
+
+# MESA v2 - Backend
+backend/.env
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+backend/.venv/
+
+# MESA v2 - Frontend
+frontend/.env.local
+frontend/.next/
+frontend/node_modules/
 
 # bkit auto-generated
 docs/.bkit-memory.json
