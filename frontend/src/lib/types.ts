@@ -1,3 +1,8 @@
+/**
+ * MESA 공통 TypeScript 타입 정의
+ * 백엔드 API 응답과 일치하는 타입
+ */
+
 export type ReportLevel = 'beginner' | 'standard' | 'expert'
 export type ReportFrequency = 'daily' | 'weekly' | 'monthly'
 
@@ -23,8 +28,33 @@ export interface Report {
 export interface Indicator {
   id: string
   name_ko: string
-  description: string
   category: string
-  importance: number
+  description: string
   default_selected: boolean
+  importance: number
+}
+
+/** Web Push 구독 정보 (browser PushSubscription JSON) */
+export interface PushSubscriptionData {
+  endpoint: string
+  expirationTime: number | null
+  keys: {
+    p256dh: string
+    auth: string
+  }
+}
+
+export interface PushSubscriptionUpdate {
+  subscription: PushSubscriptionData | null
+  enabled: boolean
+}
+
+export interface VapidKeyResponse {
+  public_key: string
+}
+
+export interface SettingsUpdate {
+  report_level?: string
+  report_frequency?: string
+  selected_indicators?: string[]
 }
