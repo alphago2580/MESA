@@ -22,8 +22,9 @@ export default function Login() {
       const res = await authApi.login(email, password)
       localStorage.setItem('mesa_token', res.data.access_token)
       router.push('/')
-    } catch (err: any) {
-      setError(err.response?.data?.detail || '오류가 발생했습니다')
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } }
+      setError(axiosErr.response?.data?.detail || '오류가 발생했습니다')
     } finally {
       setLoading(false)
     }
@@ -37,17 +38,44 @@ export default function Login() {
           <p className="text-gray-500 text-sm mt-2">AI 경제 리포트 서비스</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm" required />
-          <input type="password" placeholder="비밀번호" value={password} onChange={e => setPassword(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm" required />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button type="submit" disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium transition disabled:opacity-50 text-sm">
+          <div>
+            <label htmlFor="email" className="block text-gray-400 text-xs mb-1">이메일</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-gray-400 text-xs mb-1">비밀번호</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 text-sm"
+              required
+            />
+          </div>
+          {error && (
+            <p role="alert" className="text-red-400 text-sm">{error}</p>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium transition disabled:opacity-50 text-sm"
+          >
             {loading ? '처리 중...' : isRegister ? '회원가입' : '로그인'}
           </button>
-          <button type="button" onClick={() => setIsRegister(!isRegister)}
-            className="w-full text-gray-500 hover:text-gray-300 text-sm transition">
+          <button
+            role="link"
+            type="button"
+            onClick={() => setIsRegister(!isRegister)}
+            className="w-full text-gray-500 hover:text-gray-300 text-sm transition"
+          >
             {isRegister ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
           </button>
         </form>

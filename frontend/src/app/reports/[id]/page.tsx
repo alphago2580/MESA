@@ -38,7 +38,7 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           </button>
         </div>
       </div>
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      <article data-testid="report-content" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   )
 }

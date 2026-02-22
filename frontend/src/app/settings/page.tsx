@@ -12,7 +12,7 @@ const LEVEL_OPTIONS = [
 ]
 
 const FREQ_OPTIONS = [
-  { value: 'daily', label: '매일', desc: '매일 오전 8시' },
+  { value: 'daily', label: '일간', desc: '매일 오전 8시' },
   { value: 'weekly', label: '매주', desc: '매주 월요일 오전 8시' },
   { value: 'monthly', label: '매월', desc: '매월 1일 오전 8시' },
 ]
@@ -81,16 +81,33 @@ export default function Settings() {
         <h1 className="text-xl font-bold text-white">리포트 설정</h1>
       </div>
 
+      {/* 저장 상태 */}
+      <div role="status" aria-live="polite" className="min-h-6 mb-2">
+        {saved && (
+          <p className="text-green-400 text-sm font-medium">저장되었습니다!</p>
+        )}
+      </div>
+
       {/* 리포트 레벨 */}
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">리포트 깊이</h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-label="리포트 깊이">
           {LEVEL_OPTIONS.map(opt => (
-            <button key={opt.value} onClick={() => setLevel(opt.value)}
-              className={`p-4 rounded-xl border-2 text-left transition ${level === opt.value ? opt.color : 'border-gray-800 bg-gray-900'}`}>
+            <label
+              key={opt.value}
+              className={`p-4 rounded-xl border-2 text-left transition cursor-pointer ${level === opt.value ? opt.color : 'border-gray-800 bg-gray-900'}`}
+            >
+              <input
+                type="radio"
+                name="level"
+                value={opt.value}
+                checked={level === opt.value}
+                onChange={() => setLevel(opt.value)}
+                className="sr-only"
+              />
               <div className="font-semibold text-white text-sm">{opt.label}</div>
               <div className="text-gray-400 text-xs mt-1">{opt.desc}</div>
-            </button>
+            </label>
           ))}
         </div>
       </section>
@@ -98,13 +115,23 @@ export default function Settings() {
       {/* 수신 주기 */}
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">수신 주기</h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-label="수신 주기">
           {FREQ_OPTIONS.map(opt => (
-            <button key={opt.value} onClick={() => setFrequency(opt.value)}
-              className={`p-4 rounded-xl border-2 text-left transition ${frequency === opt.value ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800 bg-gray-900'}`}>
+            <label
+              key={opt.value}
+              className={`p-4 rounded-xl border-2 text-left transition cursor-pointer ${frequency === opt.value ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800 bg-gray-900'}`}
+            >
+              <input
+                type="radio"
+                name="frequency"
+                value={opt.value}
+                checked={frequency === opt.value}
+                onChange={() => setFrequency(opt.value)}
+                className="sr-only"
+              />
               <div className="font-semibold text-white text-sm">{opt.label}</div>
               <div className="text-gray-400 text-xs mt-1">{opt.desc}</div>
-            </button>
+            </label>
           ))}
         </div>
       </section>
@@ -121,8 +148,12 @@ export default function Settings() {
               <div className="space-y-2">
                 {inds.map(ind => (
                   <label key={ind.id} className="flex items-center gap-3 p-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-800 transition">
-                    <input type="checkbox" checked={selected.includes(ind.id)} onChange={() => toggleIndicator(ind.id)}
-                      className="w-4 h-4 rounded accent-blue-500" />
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(ind.id)}
+                      onChange={() => toggleIndicator(ind.id)}
+                      className="w-4 h-4 rounded accent-blue-500"
+                    />
                     <div className="flex-1">
                       <div className="text-sm text-white font-medium">{ind.name_ko}</div>
                       <div className="text-xs text-gray-500">{ind.description}</div>
@@ -141,11 +172,17 @@ export default function Settings() {
       </section>
 
       {/* 저장 버튼 */}
-      <button onClick={handleSave} disabled={saving}
-        className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-sm transition ${saved ? 'bg-green-500 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'} disabled:opacity-50`}>
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-sm transition ${saved ? 'bg-green-500 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'} disabled:opacity-50`}
+      >
         <Save size={16} />
         {saved ? '저장되었습니다!' : saving ? '저장 중...' : '설정 저장'}
       </button>
+
+      {/* 사용자 정보 표시 (로드 확인용) */}
+      {user && <div className="sr-only">{user.email}</div>}
     </div>
   )
 }
