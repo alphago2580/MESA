@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { reportsApi, authApi } from '@/lib/api'
+import { reportsApi, authApi, clearAuthToken } from '@/lib/api'
 import type { Report, User } from '@/lib/types'
 import { Settings, FileText, RefreshCw, LogOut } from 'lucide-react'
 import { format } from 'date-fns'
@@ -18,16 +18,17 @@ export default function Dashboard() {
   const [generating, setGenerating] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('mesa_token')
-    if (!token) { router.push('/login'); return }
+    // 인증 체크는 middleware.ts가 중앙 처리 — 여기서는 데이터 로드만 담당
     Promise.all([authApi.me(), reportsApi.list()])
       .then(([userRes, reportsRes]) => {
         setUser(userRes.data)
         setReports(reportsRes.data)
       })
-      .catch(() => { localStorage.removeItem('mesa_token'); router.push('/login') })
+      .catch(() => {
+        // 401 응답 시 api.ts interceptor가 쿠키+localStorage 초기화 후 /login 리다이렉트
+      })
       .finally(() => setLoading(false))
-  }, [router])
+  }, [])
 
   const handleGenerate = async () => {
     setGenerating(true)
@@ -38,6 +39,11 @@ export default function Dashboard() {
     } finally {
       setGenerating(false)
     }
+  }
+
+  const handleLogout = () => {
+    clearAuthToken()
+    router.push('/login')
   }
 
   if (loading) return (
@@ -66,7 +72,7 @@ export default function Dashboard() {
             className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
             <Settings size={18} />
           </button>
-          <button onClick={() => { localStorage.removeItem('mesa_token'); router.push('/login') }}
+          <button onClick={handleLogout}
             className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition text-gray-400">
             <LogOut size={18} />
           </button>

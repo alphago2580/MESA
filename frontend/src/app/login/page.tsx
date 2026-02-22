@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { authApi } from '@/lib/api'
+import { authApi, setAuthToken } from '@/lib/api'
 
 export default function Login() {
   const router = useRouter()
@@ -20,7 +20,7 @@ export default function Login() {
         await authApi.register(email, password)
       }
       const res = await authApi.login(email, password)
-      localStorage.setItem('mesa_token', res.data.access_token)
+      setAuthToken(res.data.access_token)
       router.push('/')
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } }
@@ -42,6 +42,7 @@ export default function Login() {
             <label htmlFor="email" className="block text-gray-400 text-xs mb-1">이메일</label>
             <input
               id="email"
+              data-testid="email-input"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -53,6 +54,7 @@ export default function Login() {
             <label htmlFor="password" className="block text-gray-400 text-xs mb-1">비밀번호</label>
             <input
               id="password"
+              data-testid="password-input"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -61,10 +63,11 @@ export default function Login() {
             />
           </div>
           {error && (
-            <p role="alert" className="text-red-400 text-sm">{error}</p>
+            <p role="alert" data-testid="error-message" className="text-red-400 text-sm">{error}</p>
           )}
           <button
             type="submit"
+            data-testid="submit-button"
             disabled={loading}
             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-medium transition disabled:opacity-50 text-sm"
           >
@@ -73,6 +76,7 @@ export default function Login() {
           <button
             role="link"
             type="button"
+            data-testid="toggle-mode-button"
             onClick={() => setIsRegister(!isRegister)}
             className="w-full text-gray-500 hover:text-gray-300 text-sm transition"
           >

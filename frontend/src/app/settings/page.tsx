@@ -37,8 +37,7 @@ export default function Settings() {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('mesa_token')
-    if (!token) { router.push('/login'); return }
+    // 인증 체크는 middleware.ts가 중앙 처리 — 여기서는 데이터 로드만 담당
     Promise.all([authApi.me(), indicatorsApi.list()])
       .then(([userRes, indRes]) => {
         const u = userRes.data
